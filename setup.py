@@ -3,9 +3,15 @@ import platform
 import pkg_resources
 from setuptools import find_packages, setup
 
+# Function to read requirements.txt
+def parse_requirements(filename):
+    """Load requirements from a pip requirements file."""
+    lineiter = (line.strip() for line in open(filename))
+    return [line for line in lineiter if line and not line.startswith("#")]
+
 setup(
     name="infer_rvc_python",
-    version="1.2.0",
+    version="1.0.0",
     description="Python wrapper for fast inference with rvc",
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
@@ -16,21 +22,7 @@ setup(
     license="MIT",
     packages=find_packages(),
     package_data={'': ['*.txt', '*.rep', '*.pickle']},
-    install_requires=[
-        "torch",
-        "torchaudio",
-        "gradio",
-        "praat-parselmouth>=0.4.3",
-        "pyworld==0.3.2",
-        "faiss-cpu==1.7.3",
-        "torchcrepe==0.0.20",
-        "ffmpeg-python>=0.2.0",
-        "fairseq==0.12.2",
-        "typeguard==4.2.0",
-        "soundfile",
-        "librosa",
-        "numpy",
-    ],
+    install_requires=parse_requirements('requirements.txt'),
     include_package_data=True,
     extras_require={"all": [
         "scipy",
