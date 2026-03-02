@@ -21,6 +21,7 @@ from infer_rvc_python.root_pipe import VC, change_rms, bh, ah
 import librosa
 from urllib.parse import urlparse
 import copy
+import torch.serialization
 
 warnings.filterwarnings("ignore")
 SUPPORTED_SAMPLE_RATES = [8000, 12000, 16000, 22050, 24000, 32000, 44100, 48000]  # 96000
@@ -183,6 +184,7 @@ def download_manager(
 
 def load_hu_bert(config, hubert_path=None):
     from fairseq import checkpoint_utils
+    import torch.serialization
 
     if hubert_path is None:
         hubert_path = ""
@@ -193,10 +195,17 @@ def load_hu_bert(config, hubert_path=None):
             )
         hubert_path = "hubert_base.pt"
 
+    # Add fairseq Dictionary to safe globals if using PyTorch 2.6+
+    try:
+        from fairseq.data import Dictionary
+        torch.serialization.add_safe_globals([Dictionary])
+    except (ImportError, AttributeError):
+        pass
+
     models, _, _ = checkpoint_utils.load_model_ensemble_and_task(
         [hubert_path],
         suffix="",
-        weights_only=False,
+        weights_only=False,  # Explicitly set to False for compatibility
     )
     hubert_model = models[0]
     hubert_model = hubert_model.to(config.device)
@@ -215,7 +224,15 @@ def load_trained_model(model_path, config):
         raise ValueError("No model found")
 
     logger.info("Loading %s" % model_path)
-    cpt = torch.load(model_path, map_location="cpu")
+    
+    # For PyTorch 2.6+ compatibility
+    try:
+        # Try loading with weights_only=False first (safer for custom models)
+        cpt = torch.load(model_path, map_location="cpu", weights_only=False)
+    except TypeError:
+        # Fallback for older PyTorch versions that don't have weights_only parameter
+        cpt = torch.load(model_path, map_location="cpu")
+    
     tgt_sr = cpt["config"][-1]
     cpt["config"][-3] = cpt["weight"]["emb_g.weight"].shape[0]  # n_spk
     if_f0 = cpt.get("f0", 1)
@@ -927,4 +944,3 @@ class BaseLoader:
             False,
             "array",
         )
-
