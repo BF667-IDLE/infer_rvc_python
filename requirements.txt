@@ -11,3 +11,4 @@ typeguard==4.2.0
 soundfile
 librosa
 numpy>=1.25.2,<2.0.0
+pkg_resources
