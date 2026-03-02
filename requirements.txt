@@ -10,4 +10,4 @@ git+https://github.com/BF667-IDLE/fairseq.git
 typeguard==4.2.0
 soundfile
 librosa
-numpy>=1.25.2,<2.0.0
+numpy==2.3.5
