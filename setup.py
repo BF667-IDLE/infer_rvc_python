@@ -1,22 +1,16 @@
 import os
 import platform
 from setuptools import find_packages, setup
-from setuptools.command.egg_info import egg_info  # Alternative import
 
-# Function to read requirements.txt without pkg_resources
-def parse_requirements(filename):
-    """Load requirements from a pip requirements file."""
-    with open(filename, 'r') as file:
-        lines = []
-        for line in file:
-            line = line.strip()
-            # Skip empty lines and comments
-            if line and not line.startswith('#'):
-                # Handle environment markers if needed
-                if ';' in line:
-                    line = line.split(';')[0].strip()
-                lines.append(line)
-        return lines
+try:
+    from pkg_resources import parse_requirements
+except ImportError:
+    # Fallback if pkg_resources is not available
+    def parse_requirements(filename):
+        """Load requirements from a pip requirements file."""
+        with open(filename, 'r') as file:
+            return [line.strip() for line in file if line.strip() and not line.startswith('#')]
+
 
 setup(
     name="infer_rvc_python",
@@ -39,3 +33,4 @@ setup(
         "edge-tts"
     ]},
 )
+
