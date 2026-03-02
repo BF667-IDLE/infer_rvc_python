@@ -52,7 +52,7 @@ setup(
     extras_require={
         "all": [
             "scipy",
-            "numba==0.56.4",
+            "numba==0.63.1",
             "edge-tts"
         ]
     },
@@ -65,3 +65,4 @@ setup(
         "Operating System :: OS Independent",
     ],
             )
+
