@@ -12,3 +12,4 @@ soundfile
 librosa
 numpy>=1.25.2,<2.0.0
 pkg_resources
+setuptools>=65.0.0
