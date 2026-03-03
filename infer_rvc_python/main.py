@@ -205,7 +205,6 @@ def load_hu_bert(config, hubert_path=None):
     models, _, _ = checkpoint_utils.load_model_ensemble_and_task(
         [hubert_path],
         suffix="",
-        weights_only=False,  # Explicitly set to False for compatibility
     )
     hubert_model = models[0]
     hubert_model = hubert_model.to(config.device)
@@ -944,3 +943,4 @@ class BaseLoader:
             False,
             "array",
         )
+
